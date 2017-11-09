@@ -1,0 +1,19 @@
+pipeline:
+  build:
+    image: alpine
+    commands:
+      - apk --no-cache add python py-pip ca-certificates git
+      - pip install .
+      - pytest
+
+  slack:
+    image: plugins/slack
+    channel: bots
+    secrets: [ slack_webhook ]
+
+  email:
+    image: drillster/drone-email
+    from: ci@secondarymetabolites.org
+    host: mail.secondarymetabolites.org
+    username: antismash
+    secrets: [ email_password ]
