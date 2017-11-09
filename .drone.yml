@@ -2,8 +2,8 @@ pipeline:
   build:
     image: alpine
     commands:
-      - apk --no-cache add python py-pip ca-certificates git
-      - pip install .
+      - apk --no-cache add python3 ca-certificates git
+      - pip3 install .
       - pytest
 
   slack:
