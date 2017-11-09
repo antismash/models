@@ -1,0 +1,10 @@
+*.swp
+*.pyc
+__pycache__/*
+**/__pycache__/*
+.eggs/*
+*.egg-info/*
+.cache/*
+.coverage
+htmlcov/*
+.idea/*
