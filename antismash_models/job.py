@@ -39,6 +39,7 @@ class Job(BaseMapper):
         'full_hmmer',
         'gff3',
         'inclusive',
+        'ip_addr',
         'jobtype',
         'knownclusterblast',
         'last_changed',
