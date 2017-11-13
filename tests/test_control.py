@@ -9,3 +9,4 @@ def test_init(db):
     assert control.running is True
     assert control.status == 'running'
     assert control.max_jobs == 42
+    assert control.running_jobs == 0

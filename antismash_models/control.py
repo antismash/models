@@ -6,11 +6,12 @@ class Control(BaseMapper):
     """Dispatcher management object"""
 
     ATTRIBUTES = (
+        'max_jobs',
         'name',
         'running',
-        'stop_scheduled',
+        'running_jobs',
         'status',
-        'max_jobs',
+        'stop_scheduled',
     )
 
     INTERNAL = (
@@ -25,6 +26,7 @@ class Control(BaseMapper):
 
     INT_ARGS = {
         'max_jobs',
+        'running_jobs',
     }
 
     def __init__(self, db, name, max_jobs):
@@ -34,3 +36,4 @@ class Control(BaseMapper):
         self.running = True
         self.status = 'running'
         self.max_jobs = max_jobs
+        self.running_jobs = 0
