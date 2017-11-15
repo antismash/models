@@ -112,6 +112,8 @@ class BaseJob(BaseMapper):
 
         # Regular attributes that differ from None
         self.status = 'pending'
+        self.added = datetime.utcnow()
+        self.last_changed = datetime.utcnow()
 
     # Not really async, but follow the same API as the other properties
     @property

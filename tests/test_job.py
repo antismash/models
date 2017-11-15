@@ -40,6 +40,7 @@ def test_to_dict(sync_db):
     job.tta = True
     now = datetime.utcnow()
     job.added = now
+    job.last_changed = now
 
     expected = {
         'genefinder': 'none',
@@ -49,7 +50,8 @@ def test_to_dict(sync_db):
         'state': 'created',
         'status': 'pending',
         'tta': 'True',
-        'added': now.strftime("%Y-%m-%d %H:%M:%S.%f")
+        'added': now.strftime("%Y-%m-%d %H:%M:%S.%f"),
+        'last_changed': now.strftime("%Y-%m-%d %H:%M:%S.%f"),
     }
     ret = job.to_dict(True)
     assert ret == expected
