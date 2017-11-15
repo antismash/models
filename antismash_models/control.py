@@ -1,5 +1,5 @@
 """antiSMASH worker control abstraction"""
-from .base import BaseMapper, AsyncMixin, SyncMixin
+from .base import BaseMapper, async_mixin, sync_mixin
 
 
 class BaseControl(BaseMapper):
@@ -39,9 +39,11 @@ class BaseControl(BaseMapper):
         self.running_jobs = 0
 
 
-class AsyncControl(BaseControl, AsyncMixin):
+@async_mixin
+class AsyncControl(BaseControl):
     """Control object using fetch/commit co-routines"""
 
 
-class SyncControl(BaseControl, SyncMixin):
+@sync_mixin
+class SyncControl(BaseControl):
     """Control object using sync fetch/commit functions"""

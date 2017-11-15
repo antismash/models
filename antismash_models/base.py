@@ -61,15 +61,15 @@ class BaseMapper:
             setattr(self, arg, val)
 
 
-class AsyncMixin:
+def async_mixin(klass):
     """Mixin for using aioredis for database connectivity"""
     async def fetch(self):
         args = self.PROPERTIES + self.ATTRIBUTES
 
         exists = await self._db.exists(self._key)
         if exists == 0:
-            raise ValueError("No {} with ID {} in database, can't fetch".\
-                             format(self.__class__.__name__,  self._key))
+            raise ValueError("No {} with ID {} in database, can't fetch".
+                             format(self.__class__.__name__, self._key))
 
         values = await self._db.hmget(self._key, *args, encoding='utf-8')
 
@@ -78,16 +78,21 @@ class AsyncMixin:
     async def commit(self):
         return await self._db.hmset_dict(self._key, self.to_dict())
 
+    klass.fetch = fetch
+    klass.commit = commit
 
-class SyncMixin:
+    return klass
+
+
+def sync_mixin(klass):
     """Mixin for using redis for database connectivity"""
     def fetch(self):
         args = self.PROPERTIES + self.ATTRIBUTES
 
         exists = self._db.exists(self._key)
         if exists == 0:
-            raise ValueError("No {} with ID {} in database, can't fetch".\
-                             format(self.__class__.__name__,  self._key))
+            raise ValueError("No {} with ID {} in database, can't fetch".
+                             format(self.__class__.__name__, self._key))
 
         values = self._db.hmget(self._key, *args)
 
@@ -96,3 +101,9 @@ class SyncMixin:
     def commit(self):
         # sync redis 'hmset' is the same as aioredis 'hmset_dict'. Go figure
         return self._db.hmset(self._key, self.to_dict())
+
+    klass.fetch = fetch
+    klass.commit = commit
+
+    return klass
+

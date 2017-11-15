@@ -1,6 +1,6 @@
 """antiSMASH job abstraction"""
 from datetime import datetime
-from .base import BaseMapper, AsyncMixin, SyncMixin
+from .base import BaseMapper, async_mixin, sync_mixin
 
 
 class BaseJob(BaseMapper):
@@ -186,9 +186,11 @@ class BaseJob(BaseMapper):
         return "Job(id: {}, state: {})".format(self._id, self.state)
 
 
-class AsyncJob(BaseJob, AsyncMixin):
+@async_mixin
+class AsyncJob(BaseJob):
     """Job using fetch/commit as co-routines"""
 
 
-class SyncJob(BaseJob, SyncMixin):
+@sync_mixin
+class SyncJob(BaseJob):
     """Job using sync fetch/commit functions"""
