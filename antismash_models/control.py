@@ -1,8 +1,8 @@
 """antiSMASH worker control abstraction"""
-from .base import BaseMapper
+from .base import BaseMapper, AsyncMixin, SyncMixin
 
 
-class Control(BaseMapper):
+class BaseControl(BaseMapper):
     """Dispatcher management object"""
 
     ATTRIBUTES = (
@@ -30,10 +30,18 @@ class Control(BaseMapper):
     }
 
     def __init__(self, db, name, max_jobs):
-        super(Control, self).__init__(db, "control:{}".format(name))
+        super(BaseControl, self).__init__(db, "control:{}".format(name))
         self.name = name
         self.stop_scheduled = False
         self.running = True
         self.status = 'running'
         self.max_jobs = max_jobs
         self.running_jobs = 0
+
+
+class AsyncControl(BaseControl, AsyncMixin):
+    """Control object using fetch/commit co-routines"""
+
+
+class SyncControl(BaseControl, SyncMixin):
+    """Control object using sync fetch/commit functions"""
