@@ -91,6 +91,7 @@ class BaseJob(BaseMapper):
         'created',
         'downloading',
         'validating',
+        'waiting',
         'queued',
         'running',
         'done',
