@@ -42,16 +42,7 @@ class BaseMapper:
 
         return ret
 
-    async def fetch(self):
-        args = self.PROPERTIES + self.ATTRIBUTES
-
-        exists = await self._db.exists(self._key)
-        if exists == 0:
-            raise ValueError("No {} with ID {} in database, can't fetch".\
-                             format(self.__class__.__name__,  self._key))
-
-        values = await self._db.hmget(self._key, *args, encoding='utf-8')
-
+    def _parse(self, args, values):
         for i, arg in enumerate(args):
             val = values[i]
 
@@ -68,6 +59,18 @@ class BaseMapper:
                 val = datetime.strptime(val, "%Y-%m-%d %H:%M:%S.%f")
 
             setattr(self, arg, val)
+
+    async def fetch(self):
+        args = self.PROPERTIES + self.ATTRIBUTES
+
+        exists = await self._db.exists(self._key)
+        if exists == 0:
+            raise ValueError("No {} with ID {} in database, can't fetch".\
+                             format(self.__class__.__name__,  self._key))
+
+        values = await self._db.hmget(self._key, *args, encoding='utf-8')
+
+        self._parse(args, values)
 
     async def commit(self):
         return await self._db.hmset_dict(self._key, self.to_dict())
