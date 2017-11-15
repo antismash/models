@@ -1,4 +1,4 @@
 __version__ = '0.0.3'
 
 from .control import Control
-from .job import Job
+from .job import AsyncJob, SyncJob

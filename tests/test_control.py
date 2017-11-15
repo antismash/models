@@ -1,8 +1,8 @@
 from antismash_models.control import Control
 
 
-def test_init(db):
-    control = Control(db, 'name', 42)
+def test_init(sync_db):
+    control = Control(sync_db, 'name', 42)
 
     assert control.name == 'name'
     assert control.stop_scheduled is False

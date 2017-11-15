@@ -32,7 +32,7 @@ class BaseMapper:
             if getattr(self, arg) is not None:
                 arg_val = getattr(self, arg)
 
-                # aioredis can't handle bool or datetime types, int and float are fine
+                # (aio)redis can't handle bool or datetime types, int and float are fine
                 if arg in self.BOOL_ARGS:
                     arg_val = str(arg_val)
                 elif arg in self.DATE_ARGS:
@@ -60,6 +60,9 @@ class BaseMapper:
 
             setattr(self, arg, val)
 
+
+class AsyncMixin:
+    """Mixin for using aioredis for database connectivity"""
     async def fetch(self):
         args = self.PROPERTIES + self.ATTRIBUTES
 
@@ -74,3 +77,22 @@ class BaseMapper:
 
     async def commit(self):
         return await self._db.hmset_dict(self._key, self.to_dict())
+
+
+class SyncMixin:
+    """Mixin for using redis for database connectivity"""
+    def fetch(self):
+        args = self.PROPERTIES + self.ATTRIBUTES
+
+        exists = self._db.exists(self._key)
+        if exists == 0:
+            raise ValueError("No {} with ID {} in database, can't fetch".\
+                             format(self.__class__.__name__,  self._key))
+
+        values = self._db.hmget(self._key, *args)
+
+        self._parse(args, values)
+
+    def commit(self):
+        # sync redis 'hmset' is the same as aioredis 'hmset_dict'. Go figure
+        return self._db.hmset(self._key, self.to_dict())

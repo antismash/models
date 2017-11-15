@@ -1,11 +1,11 @@
 from datetime import datetime
 import pytest
-from antismash_models.job import Job
+from antismash_models.job import BaseJob, AsyncJob, SyncJob
 
 
-def test_init(db):
+def test_init(sync_db):
     fake_id = 'taxon-fake'
-    job = Job(db, fake_id)
+    job = BaseJob(sync_db, fake_id)
 
     assert job.job_id == fake_id
     assert job.taxon == 'taxon'
@@ -30,13 +30,13 @@ def test_init(db):
 
 
 def test_is_valid_taxon():
-    assert Job.is_valid_taxon('bacterial')
-    assert Job.is_valid_taxon('bob') is False
+    assert BaseJob.is_valid_taxon('bacterial')
+    assert BaseJob.is_valid_taxon('bob') is False
 
 
-def test_to_dict(db):
+def test_to_dict(sync_db):
     fake_id = 'taxon-fake'
-    job = Job(db, fake_id)
+    job = BaseJob(sync_db, fake_id)
     job.tta = True
     now = datetime.utcnow()
     job.added = now
@@ -55,27 +55,38 @@ def test_to_dict(db):
     assert ret == expected
 
 
-def test_str(db):
+def test_str(sync_db):
     fake_id = 'taxon-fake'
-    job = Job(db, fake_id)
+    job = BaseJob(sync_db, fake_id)
 
     assert str(job) == "Job(id: {}, state: created)".format(fake_id)
 
 
 @pytest.mark.asyncio
-async def test_commit(db):
+async def test_async_commit(async_db):
     fake_id = 'taxon-fake'
-    job = Job(db, fake_id)
+    job = AsyncJob(async_db, fake_id)
     job.tta = True
     now = datetime.utcnow()
     job.added = now
     await job.commit()
 
-    assert await db.exists('job:taxon-fake')
+    assert await async_db.exists('job:taxon-fake')
+
+
+def test_sync_commit(sync_db):
+    fake_id = 'taxon-fake'
+    job = SyncJob(sync_db, fake_id)
+    job.tta = True
+    now = datetime.utcnow()
+    job.added = now
+    job.commit()
+
+    assert sync_db.exists('job:taxon-fake')
 
 
 @pytest.mark.asyncio
-async def test_fetch(db):
+async def test_async_fetch(async_db):
     now = datetime.utcnow()
     job_dict = {
         'added': now.strftime("%Y-%m-%d %H:%M:%S.%f"),
@@ -88,8 +99,8 @@ async def test_fetch(db):
         'tta': 'True',
     }
 
-    await db.hmset_dict('job:taxon-fake', job_dict)
-    job = Job(db, 'taxon-fake')
+    await async_db.hmset_dict('job:taxon-fake', job_dict)
+    job = AsyncJob(async_db, 'taxon-fake')
     await job.fetch()
 
     assert job.tta
@@ -98,7 +109,35 @@ async def test_fetch(db):
 
 
 @pytest.mark.asyncio
-async def test_fetch_invalid(db):
-    job = Job(db, 'taxon-fake')
+async def test_async_fetch_invalid(async_db):
+    job = AsyncJob(async_db, 'taxon-fake')
     with pytest.raises(ValueError):
         await job.fetch()
+
+
+def test_sync_fetch(sync_db):
+    now = datetime.utcnow()
+    job_dict = {
+        'added': now.strftime("%Y-%m-%d %H:%M:%S.%f"),
+        'cf_threshold': 0.5,
+        'genefinder': 'none',
+        'molecule_type': 'nucl',
+        'seed': 42,
+        'state': 'queued',
+        'status': 'waiting for job to start',
+        'tta': 'True',
+    }
+
+    sync_db.hmset('job:taxon-fake', job_dict)
+    job = SyncJob(sync_db, 'taxon-fake')
+    job.fetch()
+
+    assert job.tta
+    assert job.seed == 42
+    assert job.cf_threshold == 0.5
+
+
+def test_sync_fetch_invalid(sync_db):
+    job = SyncJob(sync_db, 'taxon-fake')
+    with pytest.raises(ValueError):
+        job.fetch()

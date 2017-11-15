@@ -17,6 +17,7 @@ tests_require = [
     'pytest',
     'coverage',
     'pytest-cov',
+    'mockredispy-kblin >= 2.9.3.2',
     'mockaioredis',
     'pytest-asyncio',
 ]

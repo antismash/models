@@ -1,9 +1,9 @@
 """antiSMASH job abstraction"""
 from datetime import datetime
-from .base import BaseMapper
+from .base import BaseMapper, AsyncMixin, SyncMixin
 
 
-class Job(BaseMapper):
+class BaseJob(BaseMapper):
     """An antiSMASH job as represented in the Redis DB"""
     VALID_TAXA = {'bacterial', 'fungal', 'plant'}
 
@@ -98,7 +98,7 @@ class Job(BaseMapper):
     }
 
     def __init__(self, db, job_id):
-        super(Job, self).__init__(db, 'job:{}'.format(job_id))
+        super(BaseJob, self).__init__(db, 'job:{}'.format(job_id))
         self._id = job_id
 
         # taxon is the first element of the ID
@@ -164,7 +164,7 @@ class Job(BaseMapper):
         """
         Check if taxon string is one of 'bacterial', 'fungal' or 'plant'
         """
-        if taxon not in Job.VALID_TAXA:
+        if taxon not in BaseJob.VALID_TAXA:
             return False
 
         return True
@@ -174,7 +174,7 @@ class Job(BaseMapper):
         self.last_changed = datetime.utcnow()
 
     def to_dict(self, extra_info=False):
-        ret = super(Job, self).to_dict()
+        ret = super(BaseJob, self).to_dict()
 
         if extra_info:
             ret['job_id'] = self.job_id
@@ -184,3 +184,11 @@ class Job(BaseMapper):
 
     def __str__(self):
         return "Job(id: {}, state: {})".format(self._id, self.state)
+
+
+class AsyncJob(BaseJob, AsyncMixin):
+    """Job using fetch/commit as co-routines"""
+
+
+class SyncJob(BaseJob, SyncMixin):
+    """Job using sync fetch/commit functions"""
