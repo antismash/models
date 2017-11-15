@@ -9,7 +9,16 @@ if os.path.exists('README.rst'):
     long_description = open('README.rst').read()
 
 install_requires = [
+]
+
+
+async_requires = [
     'aioredis',
+]
+
+
+sync_requires = [
+    'redis',
 ]
 
 
@@ -62,6 +71,8 @@ setup(
         'Operating System :: OS Independent',
     ],
     extras_require={
+        'async': async_requires,
+        'sync': sync_requires,
         'testing': tests_require,
     },
 )
