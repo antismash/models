@@ -78,8 +78,12 @@ def async_mixin(klass):
     async def commit(self):
         return await self._db.hmset_dict(self._key, self.to_dict())
 
+    async def delete(self):
+        return await self._db.delete(self._key)
+
     klass.fetch = fetch
     klass.commit = commit
+    klass.delete = delete
 
     return klass
 
@@ -102,8 +106,12 @@ def sync_mixin(klass):
         # sync redis 'hmset' is the same as aioredis 'hmset_dict'. Go figure
         return self._db.hmset(self._key, self.to_dict())
 
+    def delete(self):
+        return self._db.delete(self._key)
+
     klass.fetch = fetch
     klass.commit = commit
+    klass.delete = delete
 
     return klass
 

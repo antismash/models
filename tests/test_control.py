@@ -35,3 +35,22 @@ def test_sync_set_invalid(sync_db):
     control = SyncControl(sync_db, 'name', 42)
     with pytest.raises(AttributeError):
         control.nope = 'foo'
+
+
+@pytest.mark.asyncio
+async def test_async_delete(async_db):
+    control = AsyncControl(async_db, 'name', 42)
+    await control.commit()
+    assert 1 == await async_db.exists('control:name')
+
+    await control.delete()
+    assert 0 == await async_db.exists('control:name')
+
+
+def test_sync_delete(sync_db):
+    control = SyncControl(sync_db, 'name', 42)
+    control.commit()
+    assert 1 == sync_db.exists('control:name')
+
+    control.delete()
+    assert 0 == sync_db.exists('control:name')
