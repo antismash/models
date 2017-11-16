@@ -37,7 +37,8 @@ def test_init(sync_db):
 
 
 def test_is_valid_taxon():
-    assert BaseJob.is_valid_taxon('bacterial')
+    assert BaseJob.is_valid_taxon('bacteria')
+    assert BaseJob.is_valid_taxon('fungi')
     assert BaseJob.is_valid_taxon('bob') is False
 
 

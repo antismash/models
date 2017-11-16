@@ -5,7 +5,7 @@ from .base import BaseMapper, async_mixin, sync_mixin
 
 class BaseJob(BaseMapper):
     """An antiSMASH job as represented in the Redis DB"""
-    VALID_TAXA = {'bacterial', 'fungal', 'plant'}
+    VALID_TAXA = {'bacteria', 'fungi', 'plant'}
 
     PROPERTIES = (
         'genefinder',
