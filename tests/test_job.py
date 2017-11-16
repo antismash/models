@@ -28,6 +28,13 @@ def test_init(sync_db):
     job.genefinder = 'prodigal'
     assert job.genefinder == 'prodigal'
 
+    assert job.genefinding == 'prodigal'
+    with pytest.raises(ValueError):
+        job.genefinding = 'bob'
+    job.genefinding = 'none'
+    assert job.genefinding == 'none'
+    assert job.genefinder == job.genefinding
+
 
 def test_is_valid_taxon():
     assert BaseJob.is_valid_taxon('bacterial')

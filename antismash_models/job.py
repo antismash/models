@@ -165,6 +165,15 @@ class BaseJob(BaseMapper):
             raise ValueError('Invalid genefinding method {}'.format(value))
         self._genefinder = value
 
+    # We want to migrate from "genefinder" to "genefinding" eventually
+    @property
+    def genefinding(self):
+        return self._genefinder
+
+    @genefinding.setter
+    def genefinding(self, value):
+        self.genefinder = value
+
     @staticmethod
     def is_valid_taxon(taxon: str) -> bool:
         """
