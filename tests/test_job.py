@@ -143,3 +143,15 @@ def test_sync_fetch_invalid(sync_db):
     job = SyncJob(sync_db, 'taxon-fake')
     with pytest.raises(ValueError):
         job.fetch()
+
+
+def test_async_set_invalid(async_db):
+    job = AsyncJob(async_db, 'taxon-fake')
+    with pytest.raises(AttributeError):
+        job.nope = 'foo'
+
+
+def test_sync_set_invalid(sync_db):
+    job = SyncJob(sync_db, 'taxon-fake')
+    with pytest.raises(AttributeError):
+        job.nope = 'foo'

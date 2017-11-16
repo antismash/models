@@ -53,6 +53,9 @@ class BaseJob(BaseMapper):
         'tta',
     )
 
+    # Meh, needs to be repeated if we want to allow subclasses to have restricted attributes
+    __slots__ = ATTRIBUTES + INTERNAL + tuple(['_%s' % p for p in PROPERTIES])
+
     BOOL_ARGS = {
         'all_orfs',
         'asf',
@@ -192,8 +195,10 @@ class BaseJob(BaseMapper):
 @async_mixin
 class AsyncJob(BaseJob):
     """Job using fetch/commit as co-routines"""
+    __slots__ = ()
 
 
 @sync_mixin
 class SyncJob(BaseJob):
     """Job using sync fetch/commit functions"""
+    __slots__ = ()
