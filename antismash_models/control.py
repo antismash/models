@@ -19,6 +19,9 @@ class BaseControl(BaseMapper):
         '_key',
     )
 
+    # Meh, needs to be repeated if we want to allow subclasses to have restricted attributes
+    __slots__ = ATTRIBUTES + INTERNAL
+
     BOOL_ARGS = {
         'running',
         'stop_scheduled'
@@ -42,8 +45,10 @@ class BaseControl(BaseMapper):
 @async_mixin
 class AsyncControl(BaseControl):
     """Control object using fetch/commit co-routines"""
+    __slots__ = ()
 
 
 @sync_mixin
 class SyncControl(BaseControl):
     """Control object using sync fetch/commit functions"""
+    __slots__ = ()
