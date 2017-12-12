@@ -66,6 +66,22 @@ class BaseMapper:
             setattr(self, arg, val)
 
 
+    @classmethod
+    def fromExisting(cls, new_id, existing):
+        """"Create a copy from an existing object, with a new ID
+
+        :param new_id: New key to use
+        :param existing: Existing object to copy values from
+        :return: New mapper object
+        """
+        if not isinstance(existing, cls):
+            raise ValueError("Can't copy from type {!r}".format(existing.__class__))
+        args, values = zip(*existing.to_dict().items())
+        new = cls(existing._db, new_id)
+        new._parse(args, values)
+        return new
+
+
 def async_mixin(klass):
     """Mixin for using aioredis for database connectivity"""
     async def fetch(self):

@@ -36,6 +36,20 @@ def test_init(sync_db):
     assert job.genefinder == job.genefinding
 
 
+def test_fromExisting(sync_db):
+    first_id = 'bacteria-first'
+    second_id = 'bacteria-second'
+    first_job = BaseJob(sync_db, first_id)
+    first_job.download = 'FAKE1234'
+
+    second_job = BaseJob.fromExisting(second_id, first_job)
+    assert first_job.job_id != second_job.job_id
+    assert first_job.download == second_job.download
+
+    with pytest.raises(ValueError):
+        SyncJob.fromExisting('bactaria-broken', first_job)
+
+
 def test_is_valid_taxon():
     assert BaseJob.is_valid_taxon('bacteria')
     assert BaseJob.is_valid_taxon('fungi')
