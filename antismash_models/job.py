@@ -98,7 +98,8 @@ class BaseJob(BaseMapper):
         'queued',
         'running',
         'done',
-        'failed'
+        'failed',
+        'removed',
     }
 
     def __init__(self, db, job_id):
