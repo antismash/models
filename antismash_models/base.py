@@ -46,10 +46,15 @@ class BaseMapper:
         for i, arg in enumerate(args):
             val = values[i]
 
-            if val is None:
+            # Don't touch values that are unset
+            if val is None and getattr(self, arg) is None:
                 continue
 
-            if arg in self.BOOL_ARGS:
+            if val is None:
+                # avoid type conversion for None values
+                # this allows 'unsetting' values that used to be set
+                pass
+            elif arg in self.BOOL_ARGS:
                 val = (val != 'False')
             elif arg in self.INT_ARGS:
                 val = int(val)
