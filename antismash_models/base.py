@@ -61,7 +61,11 @@ class BaseMapper:
             elif arg in self.FLOAT_ARGS:
                 val = float(val)
             elif arg in self.DATE_ARGS:
-                val = datetime.strptime(val, "%Y-%m-%d %H:%M:%S.%f")
+                # We're not totally fixated on sub-second resolution
+                try:
+                    val = datetime.strptime(val, "%Y-%m-%d %H:%M:%S.%f")
+                except ValueError:
+                    val = datetime.strptime(val, "%Y-%m-%d %H:%M:%S")
 
             setattr(self, arg, val)
 

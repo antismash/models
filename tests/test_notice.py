@@ -23,6 +23,17 @@ def test_sync_expire(sync_db):
     assert sync_db.ttl(notice._key) <= 604800
 
 
+def test_low_res_date(sync_db):
+    notice = SyncNotice(sync_db, 'fake')
+    notice.commit()
+
+    date_str = sync_db.hget(notice._key, 'show_from')
+    assert date_str == notice.show_from.strftime("%Y-%m-%d %H:%M:%S.%f")
+    sync_db.hset(notice._key, 'show_from', date_str[:date_str.find('.')])
+
+    notice.fetch()
+
+
 @pytest.mark.asyncio
 async def test_async_expire(async_db):
     notice = AsyncNotice(async_db, 'fake')
