@@ -99,6 +99,7 @@ def async_mixin(klass):
         values = await self._db.hmget(self._key, *args, encoding='utf-8')
 
         self._parse(args, values)
+        return self
 
     async def commit(self):
         return await self._db.hmset_dict(self._key, self.to_dict())
@@ -126,6 +127,7 @@ def sync_mixin(klass):
         values = self._db.hmget(self._key, *args)
 
         self._parse(args, values)
+        return self
 
     def commit(self):
         # sync redis 'hmset' is the same as aioredis 'hmset_dict'. Go figure
