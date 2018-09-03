@@ -46,6 +46,7 @@ class BaseJob(BaseMapper):
         'knownclusterblast',
         'last_changed',
         'minimal',
+        'original_id',
         'seed',
         'smcogs',
         'subclusterblast',
@@ -233,6 +234,18 @@ class BaseJob(BaseMapper):
 
     def __str__(self):
         return "Job(id: {}, state: {})".format(self._id, self.state)
+
+    @classmethod
+    def fromExisting(cls, new_id, existing):
+        """"Create a copy from an existing job, with a new ID
+
+        :param new_id: New key to use
+        :param existing: Existing job to copy values from
+        :return: New job object
+        """
+        new = super(BaseJob, cls).fromExisting(new_id, existing)
+        new.original_id = existing.job_id
+        return new
 
 
 @async_mixin

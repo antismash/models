@@ -75,6 +75,7 @@ def test_fromExisting(sync_db):
     second_job = BaseJob.fromExisting(second_id, first_job)
     assert first_job.job_id != second_job.job_id
     assert first_job.download == second_job.download
+    assert second_job.original_id == first_job.job_id
 
     with pytest.raises(ValueError):
         SyncJob.fromExisting('bactaria-broken', first_job)
