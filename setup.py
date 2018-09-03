@@ -4,9 +4,7 @@ from setuptools import setup
 from setuptools.command.test import test as TestCommand
 
 short_description = "An object model for mapping antiSMASH data objects from and to Redis via aioredis."
-long_description = short_description
-if os.path.exists('README.rst'):
-    long_description = open('README.rst').read()
+long_description = open('README.md').read()
 
 install_requires = [
 ]
@@ -57,6 +55,7 @@ setup(
     author_email='kblin@biosustain.dtu.dk',
     description=short_description,
     long_description=long_description,
+    long_description_content_type='text/markdown',
     install_requires=install_requires,
     tests_require=tests_require,
     packages=['antismash_models'],
