@@ -11,6 +11,7 @@ class BaseJob(BaseMapper):
         'genefinder',
         'molecule_type',
         'state',
+        'status',
     )
 
     INTERNAL = (
@@ -46,7 +47,6 @@ class BaseJob(BaseMapper):
         'minimal',
         'seed',
         'smcogs',
-        'status',
         'subclusterblast',
         'to_pos',
         'transatpks_da',
@@ -113,9 +113,9 @@ class BaseJob(BaseMapper):
         self._state = 'created'
         self._molecule_type = 'nucl'
         self._genefinder = 'none'
+        self.status = 'pending'
 
         # Regular attributes that differ from None
-        self.status = 'pending'
         self.added = datetime.utcnow()
         self.last_changed = datetime.utcnow()
 
@@ -144,6 +144,16 @@ class BaseJob(BaseMapper):
 
         self._state = value
         self.changed()
+
+    @property
+    def status(self):
+        return self._status
+
+    @status.setter
+    def status(self, value):
+        if type(value) == bytes:
+            value = value.decode('utf-8', 'ignore')
+        self._status = value
 
     @property
     def molecule_type(self):
