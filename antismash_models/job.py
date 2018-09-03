@@ -19,6 +19,7 @@ class BaseJob(BaseMapper):
         '_id',
         '_key',
         '_taxon',
+        '_legacy',
     )
 
     ATTRIBUTES = (
@@ -108,6 +109,13 @@ class BaseJob(BaseMapper):
 
         # taxon is the first element of the ID
         self._taxon = self._id.split('-')[0]
+        self._legacy = False
+
+        # unless this is a legacy job id
+        if not self.is_valid_taxon(self._taxon) and job_id.count('-') == 4:
+            self._taxon = 'bacteria'
+            self._legacy = True
+
 
         # storage for properties
         self._state = 'created'
@@ -135,10 +143,18 @@ class BaseJob(BaseMapper):
 
     @property
     def state(self):
+        if self._legacy:
+            state = self.status.split(' ')[0].rstrip(':')
+            if state in self.VALID_STATES:
+                return state
         return self._state
 
     @state.setter
     def state(self, value):
+        if value is None:
+            self._legacy = True
+            return
+
         if value not in self.VALID_STATES:
             raise ValueError('Invalid state {}'.format(value))
 
@@ -161,6 +177,9 @@ class BaseJob(BaseMapper):
 
     @molecule_type.setter
     def molecule_type(self, value):
+        if value is None:
+            value = 'nucl'
+
         if value not in {'nucl', 'prot'}:
             raise ValueError('Invalid molecule_type {}'.format(value))
 
@@ -173,7 +192,11 @@ class BaseJob(BaseMapper):
     @genefinder.setter
     def genefinder(self, value):
         if value not in {'prodigal', 'prodigal-m', 'none'}:
-            raise ValueError('Invalid genefinding method {}'.format(value))
+            if self._legacy and value in {'glimmer', 'prodigal_m'}:
+                if value == 'prodigal_m':
+                    value = 'prodigal-m'
+            else:
+                raise ValueError('Invalid genefinding method {}'.format(value))
         self._genefinder = value
 
     # We want to migrate from "genefinder" to "genefinding" eventually

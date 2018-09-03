@@ -36,6 +36,36 @@ def test_init(sync_db):
     assert job.genefinder == job.genefinding
 
 
+def test_init_legacy(sync_db):
+    fake_id = 'a7db5650-ec0d-4ca8-b3b2-c5de27a8cdf3'
+    job = BaseJob(sync_db, fake_id)
+    assert job._legacy
+    assert job.taxon == 'bacteria'
+
+    assert job.state == 'created'
+    job.status = "done: All finished"
+    assert job.state == 'done'
+
+    job.genefinder = 'prodigal_m'
+    assert job.genefinder == 'prodigal-m'
+
+    job.molecule_type = None
+    assert job.molecule_type == 'nucl'
+
+    job.status = b'failed: Invalid utf-8 \x21'
+    assert job.state == 'failed'
+
+
+def test_legacy_from_state(sync_db):
+    fake_id = 'bacteria-fake'
+    job = BaseJob(sync_db, fake_id)
+    assert not job._legacy
+
+    job.state = None
+
+    assert job._legacy
+
+
 def test_fromExisting(sync_db):
     first_id = 'bacteria-first'
     second_id = 'bacteria-second'
