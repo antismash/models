@@ -21,6 +21,8 @@ def test_init(sync_db):
         job.molecule_type = 'bob'
     job.molecule_type = 'prot'
     assert job.molecule_type == 'prot'
+    job.molecule_type = 'nucleotide'
+    assert job.molecule_type == 'nucl'
 
     assert job.genefinder == 'none'
     with pytest.raises(ValueError):

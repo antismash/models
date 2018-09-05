@@ -181,6 +181,9 @@ class BaseJob(BaseMapper):
         if value is None:
             value = 'nucl'
 
+        if value == 'nucleotide':
+            value = 'nucl'
+
         if value not in {'nucl', 'prot'}:
             raise ValueError('Invalid molecule_type {}'.format(value))
 
