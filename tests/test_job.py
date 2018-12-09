@@ -96,12 +96,14 @@ def test_to_dict(sync_db):
     now = datetime.utcnow()
     job.added = now
     job.last_changed = now
+    job.needs_download = True
 
     expected = {
         'genefinder': 'none',
         'job_id': fake_id,
         'taxon': 'taxon',
         'molecule_type': 'nucl',
+        'needs_download': 'True',
         'state': 'created',
         'status': 'pending',
         'tta': 'True',
