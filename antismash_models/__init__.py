@@ -1,4 +1,4 @@
-__version__ = '0.1.10'
+__version__ = '0.1.11'
 
 from .control import AsyncControl, SyncControl
 from .job import AsyncJob, SyncJob
