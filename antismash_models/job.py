@@ -201,7 +201,7 @@ class BaseJob(BaseMapper):
 
     @genefinder.setter
     def genefinder(self, value):
-        if value not in {'prodigal', 'prodigal-m', 'none'}:
+        if value not in {'prodigal', 'prodigal-m', 'glimmerhmm', 'error', 'none'}:
             if self._legacy and value in {'glimmer', 'prodigal_m'}:
                 if value == 'prodigal_m':
                     value = 'prodigal-m'
