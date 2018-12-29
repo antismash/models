@@ -37,6 +37,8 @@ def test_init(sync_db):
     assert job.genefinding == 'none'
     assert job.genefinder == job.genefinding
 
+    assert job.trace == []
+
 
 def test_init_legacy(sync_db):
     fake_id = 'a7db5650-ec0d-4ca8-b3b2-c5de27a8cdf3'
@@ -97,6 +99,7 @@ def test_to_dict(sync_db):
     job.added = now
     job.last_changed = now
     job.needs_download = True
+    job.trace.append("foo")
 
     expected = {
         'genefinder': 'none',
@@ -109,6 +112,7 @@ def test_to_dict(sync_db):
         'tta': 'True',
         'added': now.strftime("%Y-%m-%d %H:%M:%S.%f"),
         'last_changed': now.strftime("%Y-%m-%d %H:%M:%S.%f"),
+        'trace': '["foo"]',
     }
     ret = job.to_dict(True)
     assert ret == expected

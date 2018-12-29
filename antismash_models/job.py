@@ -54,6 +54,7 @@ class BaseJob(BaseMapper):
         'smcogs',
         'subclusterblast',
         'to_pos',
+        'trace',
         'transatpks_da',
         'tta',
     )
@@ -98,6 +99,10 @@ class BaseJob(BaseMapper):
         'last_changed',
     }
 
+    LIST_ARGS = {
+        'trace',
+    }
+
     VALID_STATES = {
         'created',
         'downloading',
@@ -133,6 +138,10 @@ class BaseJob(BaseMapper):
         # Regular attributes that differ from None
         self.added = datetime.utcnow()
         self.last_changed = datetime.utcnow()
+
+        # Initialise list type attributes to [] instead of None
+        for attr in self.LIST_ARGS:
+            setattr(self, attr, [])
 
     # Not really async, but follow the same API as the other properties
     @property
