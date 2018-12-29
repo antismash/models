@@ -53,6 +53,7 @@ class BaseJob(BaseMapper):
         'seed',
         'smcogs',
         'subclusterblast',
+        'target_queues',
         'to_pos',
         'trace',
         'transatpks_da',
@@ -100,6 +101,7 @@ class BaseJob(BaseMapper):
     }
 
     LIST_ARGS = {
+        'target_queues',
         'trace',
     }
 
