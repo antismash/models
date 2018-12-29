@@ -1,5 +1,6 @@
 """Base Redis<->Python object mapper"""
 from datetime import datetime
+import json
 
 
 class BaseMapper:
@@ -15,6 +16,7 @@ class BaseMapper:
     INT_ARGS = {}
     FLOAT_ARGS = {}
     DATE_ARGS = {}
+    LIST_ARGS = {}
 
     def __init__(self, db, key):
         self._db = db
@@ -37,6 +39,8 @@ class BaseMapper:
                     arg_val = str(arg_val)
                 elif arg in self.DATE_ARGS:
                     arg_val = arg_val.strftime("%Y-%m-%d %H:%M:%S.%f")
+                elif arg in self.LIST_ARGS:
+                    arg_val = json.dumps(arg_val)
 
                 ret[arg] = arg_val
 
@@ -66,6 +70,8 @@ class BaseMapper:
                     val = datetime.strptime(val, "%Y-%m-%d %H:%M:%S.%f")
                 except ValueError:
                     val = datetime.strptime(val, "%Y-%m-%d %H:%M:%S")
+            elif arg in self.LIST_ARGS:
+                val = json.loads(val)
 
             setattr(self, arg, val)
 
