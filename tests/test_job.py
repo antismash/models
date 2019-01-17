@@ -177,6 +177,8 @@ async def test_async_fetch(async_db):
     assert job.tta
     assert job.seed == 42
     assert job.cf_threshold == 0.5
+    assert job.trace == []
+    assert job.target_queues == []
 
 
 @pytest.mark.asyncio
@@ -206,6 +208,8 @@ def test_sync_fetch(sync_db):
     assert job.tta
     assert job.seed == 42
     assert job.cf_threshold == 0.5
+    assert job.trace == []
+    assert job.target_queues == []
 
 
 def test_sync_fetch_invalid(sync_db):

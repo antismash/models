@@ -57,7 +57,9 @@ class BaseMapper:
             if val is None:
                 # avoid type conversion for None values
                 # this allows 'unsetting' values that used to be set
-                pass
+                # only create an empty list for list args
+                if arg in self.LIST_ARGS:
+                    val = []
             elif arg in self.BOOL_ARGS:
                 val = (val != 'False')
             elif arg in self.INT_ARGS:
