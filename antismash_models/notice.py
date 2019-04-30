@@ -87,7 +87,9 @@ def expiring_sync_mixin(klass):
         @wraps(fn)
         def wrapper(self):
             ret = fn(self)
-            self._db.expireat(self._key, self.show_until)
+            # regular redis doesn't deal with datetime objects anymore either, so also use expire on the difference
+            td = self.show_until - datetime.utcnow()
+            self._db.expire(self._key, int(td.total_seconds()))
             return ret
         return wrapper
 
