@@ -16,7 +16,7 @@ async_requires = [
 
 
 sync_requires = [
-    'redis',
+    'redis >=2.6,<3.0',
 ]
 
 
