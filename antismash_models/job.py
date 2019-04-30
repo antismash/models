@@ -9,6 +9,7 @@ class BaseJob(BaseMapper):
 
     PROPERTIES = (
         'genefinder',
+        'hmmdetection_strictness',
         'molecule_type',
         'state',
         'status',
@@ -117,6 +118,13 @@ class BaseJob(BaseMapper):
         'removed',
     }
 
+    STRICTNESS_LEVELS = {
+        'strict',
+        'relaxed',
+        'loose',
+        None,
+    }
+
     def __init__(self, db, job_id):
         super(BaseJob, self).__init__(db, 'job:{}'.format(job_id))
         self._id = job_id
@@ -130,11 +138,11 @@ class BaseJob(BaseMapper):
             self._taxon = 'bacteria'
             self._legacy = True
 
-
         # storage for properties
         self._state = 'created'
         self._molecule_type = 'nucl'
         self._genefinder = 'none'
+        self._hmmdetection_strictness = None
         self.status = 'pending'
 
         # Regular attributes that differ from None
@@ -228,6 +236,17 @@ class BaseJob(BaseMapper):
     @genefinding.setter
     def genefinding(self, value):
         self.genefinder = value
+
+    @property
+    def hmmdetection_strictness(self):
+        return self._hmmdetection_strictness
+
+    @hmmdetection_strictness.setter
+    def hmmdetection_strictness(self, value):
+        if value not in BaseJob.STRICTNESS_LEVELS:
+            raise ValueError('Invalid strictnes level {}'.format(value))
+
+        self._hmmdetection_strictness = value
 
     @staticmethod
     def is_valid_taxon(taxon: str) -> bool:

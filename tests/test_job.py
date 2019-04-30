@@ -40,6 +40,10 @@ def test_init(sync_db):
     assert job.target_queues == []
     assert job.trace == []
 
+    assert job.hmmdetection_strictness is None
+    with pytest.raises(ValueError):
+        job.hmmdetection_strictness = 'bob'
+
 
 def test_init_legacy(sync_db):
     fake_id = 'a7db5650-ec0d-4ca8-b3b2-c5de27a8cdf3'
@@ -101,6 +105,7 @@ def test_to_dict(sync_db):
     job.last_changed = now
     job.needs_download = True
     job.trace.append("foo")
+    job.hmmdetection_strictness = 'strict'
 
     expected = {
         'genefinder': 'none',
@@ -115,6 +120,7 @@ def test_to_dict(sync_db):
         'last_changed': now.strftime("%Y-%m-%d %H:%M:%S.%f"),
         'target_queues': '[]',
         'trace': '["foo"]',
+        'hmmdetection_strictness': 'strict',
     }
     ret = job.to_dict(True)
     assert ret == expected
