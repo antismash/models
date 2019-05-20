@@ -12,6 +12,7 @@ class BaseControl(BaseMapper):
         'running_jobs',
         'status',
         'stop_scheduled',
+        'version',
     )
 
     INTERNAL = (
@@ -32,7 +33,7 @@ class BaseControl(BaseMapper):
         'running_jobs',
     }
 
-    def __init__(self, db, name, max_jobs):
+    def __init__(self, db, name, max_jobs, version="unknown"):
         super(BaseControl, self).__init__(db, "control:{}".format(name))
         self.name = name
         self.stop_scheduled = False
@@ -40,6 +41,7 @@ class BaseControl(BaseMapper):
         self.status = 'running'
         self.max_jobs = max_jobs
         self.running_jobs = 0
+        self.version = version
 
 
 @async_mixin

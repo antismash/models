@@ -4,7 +4,7 @@ from antismash_models.control import AsyncControl, SyncControl
 
 
 def test_init(sync_db):
-    control = SyncControl(sync_db, 'name', 42)
+    control = SyncControl(sync_db, 'name', 42, "1ced7ea")
 
     assert control.name == 'name'
     assert control.stop_scheduled is False
@@ -12,6 +12,7 @@ def test_init(sync_db):
     assert control.status == 'running'
     assert control.max_jobs == 42
     assert control.running_jobs == 0
+    assert control.version == '1ced7ea'
 
 
 def test_async_init(async_db):
@@ -23,6 +24,7 @@ def test_async_init(async_db):
     assert control.status == 'running'
     assert control.max_jobs == 42
     assert control.running_jobs == 0
+    assert control.version == 'unknown'
 
 
 def test_async_set_invalid(async_db):
