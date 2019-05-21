@@ -1,4 +1,6 @@
+import asyncio
 import pytest
+import time
 
 from antismash_models.control import AsyncControl, SyncControl
 
@@ -56,3 +58,33 @@ def test_sync_delete(sync_db):
 
     control.delete()
     assert 0 == sync_db.exists('control:name')
+
+
+@pytest.mark.asyncio
+async def test_async_alive(async_db):
+    control = AsyncControl(async_db, 'name', 42)
+    await control.commit()
+
+    # TODO: Use persist instead once available
+    await asyncio.sleep(1)
+    old_ttl = await async_db.ttl('control:name')
+    assert old_ttl > -1
+
+    await control.alive()
+    new_ttl = await async_db.ttl('control:name')
+    assert -1 < old_ttl <= new_ttl
+
+
+def test_sync_alive(sync_db):
+    control = SyncControl(sync_db, 'name', 42)
+    control.commit()
+
+    old_ttl = sync_db.ttl('control:name')
+    assert old_ttl > -1
+
+    # TODO: Use persist instead once available
+    time.sleep(1)
+
+    control.alive()
+    new_ttl = sync_db.ttl('control:name')
+    assert -1 < old_ttl <= new_ttl
