@@ -87,6 +87,7 @@ def expiring_sync_mixin(klass):
 
     return klass
 
+
 @expiring_async_mixin
 class AsyncControl(BaseControl):
     """Control object using fetch/commit co-routines"""

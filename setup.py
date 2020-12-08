@@ -27,6 +27,7 @@ tests_require = [
     'mockredispy-kblin >= 2.9.3.4',
     'mockaioredis >= 0.0.10',
     'pytest-asyncio',
+    'flake8',
 ]
 
 
@@ -75,4 +76,3 @@ setup(
         'testing': tests_require,
     },
 )
-

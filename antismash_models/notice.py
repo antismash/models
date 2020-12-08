@@ -50,7 +50,6 @@ class BaseNotice(BaseMapper):
         self.teaser = None
         self.text = None
 
-
     @property
     def category(self):
         return self._category

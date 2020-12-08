@@ -77,7 +77,6 @@ class BaseMapper:
 
             setattr(self, arg, val)
 
-
     @classmethod
     def fromExisting(cls, new_id, existing):
         """"Create a copy from an existing object, with a new ID
@@ -149,4 +148,3 @@ def sync_mixin(klass):
     klass.delete = delete
 
     return klass
-
