@@ -55,6 +55,8 @@ class BaseJob(BaseMapper):
         'rre_minlength',
         'rre_cutoff',
         'seed',
+        'sideload',
+        'sideload_simple',
         'smcogs',
         'subclusterblast',
         'target_queues',
