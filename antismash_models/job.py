@@ -51,6 +51,9 @@ class BaseJob(BaseMapper):
         'needs_download',
         'original_id',
         'pfam2go',
+        'rre',
+        'rre_minlength',
+        'rre_cutoff',
         'seed',
         'smcogs',
         'subclusterblast',
@@ -78,6 +81,7 @@ class BaseJob(BaseMapper):
         'minimal',
         'needs_download',
         'pfam2go',
+        'rre',
         'smcogs',
         'subclusterblast',
         'transatpks_da',
@@ -88,12 +92,14 @@ class BaseJob(BaseMapper):
         'cf_cdsnr',
         'cf_npfams',
         'from_pos',
+        'rre_minlength',
         'seed',
         'to_pos',
     }
 
     FLOAT_ARGS = {
         'cf_threshold',
+        'rre_cutoff',
     }
 
     DATE_ARGS = {
