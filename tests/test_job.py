@@ -96,6 +96,27 @@ def test_is_valid_taxon():
     assert BaseJob.is_valid_taxon('bob') is False
 
 
+def test_sideload_simple_validation(sync_db):
+    fake_id = "bacteria-test"
+    job = BaseJob(sync_db, fake_id)
+    job.sideload_simple = "NC_12345:123-456"
+
+    with pytest.raises(ValueError):
+        job.sideload_simple = "NC_12345"
+
+    with pytest.raises(ValueError):
+        job.sideload_simple = "NC_123;rm -rf /:123-456"
+
+    with pytest.raises(ValueError):
+        job.sideload_simple = "NC_12345:123"
+
+    with pytest.raises(ValueError):
+        job.sideload_simple = "NC_12345:123-abc"
+
+    with pytest.raises(ValueError):
+        job.sideload_simple = "-NC_12345:123-456"
+
+
 def test_to_dict(sync_db):
     fake_id = 'taxon-fake'
     job = BaseJob(sync_db, fake_id)

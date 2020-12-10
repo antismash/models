@@ -1,5 +1,7 @@
 """antiSMASH job abstraction"""
 from datetime import datetime
+import string
+
 from .base import BaseMapper, async_mixin, sync_mixin
 
 
@@ -11,6 +13,7 @@ class BaseJob(BaseMapper):
         'genefinder',
         'hmmdetection_strictness',
         'molecule_type',
+        'sideload_simple',
         'state',
         'status',
     )
@@ -56,7 +59,6 @@ class BaseJob(BaseMapper):
         'rre_cutoff',
         'seed',
         'sideload',
-        'sideload_simple',
         'smcogs',
         'subclusterblast',
         'target_queues',
@@ -133,6 +135,8 @@ class BaseJob(BaseMapper):
         None,
     }
 
+    SAFE_ACCESSION_CHARS = string.ascii_letters + string.digits + "._-"
+
     def __init__(self, db, job_id):
         super(BaseJob, self).__init__(db, 'job:{}'.format(job_id))
         self._id = job_id
@@ -151,6 +155,7 @@ class BaseJob(BaseMapper):
         self._molecule_type = 'nucl'
         self._genefinder = 'none'
         self._hmmdetection_strictness = None
+        self._sideload_simple = None
         self.status = 'pending'
 
         # Regular attributes that differ from None
@@ -255,6 +260,36 @@ class BaseJob(BaseMapper):
             raise ValueError('Invalid strictnes level {}'.format(value))
 
         self._hmmdetection_strictness = value
+
+    @property
+    def sideload_simple(self):
+        return self._sideload_simple
+
+    @sideload_simple.setter
+    def sideload_simple(self, value):
+        # validate format is correct: ACCESSION:START-END
+        parts = value.split(":")
+        if len(parts) != 2:
+            raise ValueError("Invalid sideload_simple value {}".format(value))
+
+        acc, coords = parts
+        for ch in acc:
+            if ch not in self.SAFE_ACCESSION_CHARS:
+                raise ValueError("Invalid sideload_simple accession {}".format(acc))
+
+        if acc[0] == "-":
+            raise ValueError("Accession can't start with '-' for sideload_simple")
+
+        parts = coords.split("-")
+        if len(parts) != 2:
+            raise ValueError("Invalid sideload_simple coordinates {}".format(coords))
+
+        for p in parts:
+            for ch in p:
+                if ch not in string.digits:
+                    raise ValueError("Invalid sideload_simple coordinates {}".format(coords))
+
+        self._sideload_simple = value
 
     @staticmethod
     def is_valid_taxon(taxon: str) -> bool:
