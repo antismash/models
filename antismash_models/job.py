@@ -64,6 +64,7 @@ class BaseJob(BaseMapper):
         'smcog_trees',
         'subclusterblast',
         'target_queues',
+        'tigrfam',
         'to_pos',
         'trace',
         'transatpks_da',
@@ -92,6 +93,7 @@ class BaseJob(BaseMapper):
         'smcogs',
         'smcog_trees',
         'subclusterblast',
+        'tigrfam',
         'transatpks_da',
         'tta',
     }
