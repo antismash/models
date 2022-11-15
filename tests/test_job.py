@@ -191,7 +191,7 @@ async def test_async_fetch(async_db):
         'tta': 'True',
     }
 
-    await async_db.hmset_dict('job:taxon-fake', job_dict)
+    await async_db.hset('job:taxon-fake', mapping=job_dict)
     job = AsyncJob(async_db, 'taxon-fake')
     await job.fetch()
 
@@ -222,7 +222,7 @@ def test_sync_fetch(sync_db):
         'tta': 'True',
     }
 
-    sync_db.hmset('job:taxon-fake', job_dict)
+    sync_db.hset('job:taxon-fake', mapping=job_dict)
     job = SyncJob(sync_db, 'taxon-fake')
     job.fetch()
 

@@ -1,14 +1,14 @@
-import mockaioredis
-import mockredis
+import fakeredis
+import fakeredis.aioredis as fakeaioredis
 
 import pytest
 
 
 @pytest.fixture
 def async_db():
-    return mockaioredis.MockRedis()
+    return fakeaioredis.FakeRedis(encoding='utf-8', decode_responses=True)
 
 
 @pytest.fixture
 def sync_db():
-    return mockredis.MockRedis(encoding='utf-8', decode_responses=True)
+    return fakeredis.FakeRedis(encoding='utf-8', decode_responses=True)

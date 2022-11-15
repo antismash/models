@@ -7,25 +7,14 @@ short_description = "An object model for mapping antiSMASH data objects from and
 long_description = open('README.md').read()
 
 install_requires = [
+    'redis'
 ]
-
-
-async_requires = [
-    'aioredis',
-]
-
-
-sync_requires = [
-    'redis',
-]
-
 
 tests_require = [
     'pytest',
     'coverage',
     'pytest-cov',
-    'mockredispy-kblin >= 2.9.3.4',
-    'mockaioredis >= 0.0.10',
+    'fakeredis',
     'pytest-asyncio',
     'flake8',
 ]
@@ -71,8 +60,6 @@ setup(
         'Operating System :: OS Independent',
     ],
     extras_require={
-        'async': async_requires,
-        'sync': sync_requires,
         'testing': tests_require,
     },
 )

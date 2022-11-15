@@ -34,7 +34,7 @@ class BaseMapper:
             if getattr(self, arg) is not None:
                 arg_val = getattr(self, arg)
 
-                # (aio)redis can't handle bool or datetime types, int and float are fine
+                # redis can't handle bool or datetime types, int and float are fine
                 if arg in self.BOOL_ARGS:
                     arg_val = str(arg_val)
                 elif arg in self.DATE_ARGS:
@@ -103,13 +103,13 @@ def async_mixin(klass):
             raise ValueError("No {} with ID {} in database, can't fetch".
                              format(self.__class__.__name__, self._key))
 
-        values = await self._db.hmget(self._key, *args, encoding='utf-8')
+        values = await self._db.hmget(self._key, *args)
 
         self._parse(args, values)
         return self
 
     async def commit(self):
-        return await self._db.hmset_dict(self._key, self.to_dict())
+        return await self._db.hset(self._key, mapping=self.to_dict())
 
     async def delete(self):
         return await self._db.delete(self._key)
@@ -137,8 +137,7 @@ def sync_mixin(klass):
         return self
 
     def commit(self):
-        # sync redis 'hmset' is the same as aioredis 'hmset_dict'. Go figure
-        return self._db.hmset(self._key, self.to_dict())
+        return self._db.hset(self._key, mapping=self.to_dict())
 
     def delete(self):
         return self._db.delete(self._key)
