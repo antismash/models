@@ -8,9 +8,11 @@ def test_init_sync(sync_db):
     notice = SyncNotice(sync_db, 'fake')
     assert notice._key == 'notice:fake'
     assert notice.category == 'info'
-    assert notice.text is None
+    assert notice.text == "placeholder"
+    assert notice.teaser == "placeholder"
     notice.category = 'warning'
     assert notice.category == 'warning'
+    assert notice.notice_id == "fake"
 
     with pytest.raises(ValueError):
         notice.category = 'bob'

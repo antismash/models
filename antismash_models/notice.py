@@ -21,6 +21,7 @@ class BaseNotice(BaseMapper):
 
     INTERNAL = (
         '_db',
+        '_id',
         '_key',
     )
 
@@ -38,24 +39,32 @@ class BaseNotice(BaseMapper):
         'warning',
     }
 
-    def __init__(self, db, notice_id):
+    def __init__(self, db, notice_id: str, *, category: str = "info",
+                 teaser: str = "placeholder", text: str = "placeholder",
+                 show_from: datetime | None = None,
+                 show_until: datetime | None = None):
         super(BaseNotice, self).__init__(db, "notice:{}".format(notice_id))
-        self._category = 'info'
+        self._id = notice_id
+        self.category = category
 
         # by default, show new notices immediately
-        self.show_from = datetime.utcnow()
+        self.show_from = show_from if show_from else datetime.utcnow()
         # by default, show notices for a week
-        self.show_until = self.show_from + timedelta(days=7)
+        self.show_until = show_until if show_until else self.show_from + timedelta(days=7)
 
-        self.teaser = None
-        self.text = None
+        self.teaser = teaser
+        self.text = text
 
     @property
-    def category(self):
+    def notice_id(self) -> str:
+        return self._id
+
+    @property
+    def category(self) -> str:
         return self._category
 
     @category.setter
-    def category(self, val):
+    def category(self, val: str) -> None:
         if val not in self.VALID_CATEGORIES:
             raise ValueError("Invalid category {!r}".format(val))
         self._category = val
