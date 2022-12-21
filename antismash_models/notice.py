@@ -1,7 +1,8 @@
 """antiSMASH notice abstraction"""
+from __future__ import annotations
 from datetime import datetime, timedelta
 from functools import wraps
-from typing import TypeVar
+from typing import TypeVar, Union
 
 from .base import BaseMapper, DataBase, async_mixin, sync_mixin
 
@@ -45,8 +46,8 @@ class BaseNotice(BaseMapper):
 
     def __init__(self, db: DataBase, notice_id: str, *, category: str = "info",
                  teaser: str = "placeholder", text: str = "placeholder",
-                 show_from: datetime | None = None,
-                 show_until: datetime | None = None):
+                 show_from: Union[datetime, None] = None,
+                 show_until: Union[datetime, None] = None):
         super(BaseNotice, self).__init__(db, "notice:{}".format(notice_id))
         self._id: str = notice_id
         self.category = category

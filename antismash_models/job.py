@@ -1,7 +1,8 @@
 """antiSMASH job abstraction"""
+from __future__ import annotations
 from datetime import datetime
 import string
-from typing import Any, Type, TypeVar
+from typing import Any, Type, TypeVar, Union
 
 from .base import BaseMapper, DataBase, async_mixin, sync_mixin
 
@@ -165,10 +166,10 @@ class BaseJob(BaseMapper):
         self._state: str = 'created'
         self._molecule_type: str = 'nucl'
         self._genefinder: str = 'none'
-        self._hmmdetection_strictness: str | None = None
-        self._sideload_simple: str | None = None
+        self._hmmdetection_strictness: Union[str, None] = None
+        self._sideload_simple: Union[str, None] = None
         self.status: str = 'pending'
-        self.original_id: str | None = None
+        self.original_id: Union[str, None] = None
 
         # Regular attributes that differ from None
         self.added: datetime = datetime.utcnow()
@@ -202,7 +203,7 @@ class BaseJob(BaseMapper):
         return self._state
 
     @state.setter
-    def state(self, value: str | None) -> None:
+    def state(self, value: Union[str, None]) -> None:
         if value is None:
             self._legacy = True
             return
@@ -262,7 +263,7 @@ class BaseJob(BaseMapper):
         self.genefinder = value
 
     @property
-    def hmmdetection_strictness(self) -> str | None:
+    def hmmdetection_strictness(self) -> Union[str, None]:
         return self._hmmdetection_strictness
 
     @hmmdetection_strictness.setter
@@ -273,7 +274,7 @@ class BaseJob(BaseMapper):
         self._hmmdetection_strictness = value
 
     @property
-    def sideload_simple(self) -> str | None:
+    def sideload_simple(self) -> Union[str, None]:
         return self._sideload_simple
 
     @sideload_simple.setter

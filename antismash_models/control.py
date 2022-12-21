@@ -1,4 +1,5 @@
 """antiSMASH worker control abstraction"""
+from __future__ import annotations
 from functools import wraps
 from .base import BaseMapper, DataBase, async_mixin, sync_mixin
 

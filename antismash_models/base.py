@@ -1,12 +1,13 @@
 """Base Redis<->Python object mapper"""
+from __future__ import annotations
 from datetime import datetime
 import json
-from typing import Any, Type, TypeVar
+from typing import Any, Type, TypeVar, Union
 
 from redis import Redis as SyncRedis
 from redis.asyncio import Redis as AsyncRedis
 
-DataBase = SyncRedis | AsyncRedis
+DataBase = Union[SyncRedis, AsyncRedis]
 TMapper = TypeVar("TMapper", bound="BaseMapper")
 
 
