@@ -9,3 +9,6 @@ corelint:
 
 lint:
 	flake8 . --count --exit-zero --max-complexity=20 --statistics
+
+mypy:
+	mypy antismash_models

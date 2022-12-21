@@ -26,6 +26,9 @@ jobs:
       run: |
         make corelint
         make lint
+    - name: Test with mypy
+      run: |
+        make mypy
     - name: Test with pytest
       run: |
         make

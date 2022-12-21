@@ -17,6 +17,7 @@ tests_require = [
     'fakeredis',
     'pytest-asyncio',
     'flake8',
+    'mypy',
 ]
 
 
