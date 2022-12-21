@@ -18,6 +18,7 @@ tests_require = [
     'pytest-asyncio',
     'flake8',
     'mypy',
+    'types-redis'
 ]
 
 
