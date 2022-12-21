@@ -1,8 +1,11 @@
 """antiSMASH job abstraction"""
 from datetime import datetime
 import string
+from typing import Any, Type, TypeVar
 
-from .base import BaseMapper, async_mixin, sync_mixin
+from .base import BaseMapper, DataBase, async_mixin, sync_mixin
+
+TJob = TypeVar("TJob", bound="BaseJob")
 
 
 class BaseJob(BaseMapper):
@@ -145,13 +148,13 @@ class BaseJob(BaseMapper):
 
     SAFE_ACCESSION_CHARS = string.ascii_letters + string.digits + "._-"
 
-    def __init__(self, db, job_id):
+    def __init__(self, db: DataBase, job_id: str) -> None:
         super(BaseJob, self).__init__(db, 'job:{}'.format(job_id))
-        self._id = job_id
+        self._id: str = job_id
 
         # taxon is the first element of the ID
-        self._taxon = self._id.split('-')[0]
-        self._legacy = False
+        self._taxon: str = self._id.split('-')[0]
+        self._legacy: bool = False
 
         # unless this is a legacy job id
         if not self.is_valid_taxon(self._taxon) and job_id.count('-') == 4:
@@ -159,16 +162,17 @@ class BaseJob(BaseMapper):
             self._legacy = True
 
         # storage for properties
-        self._state = 'created'
-        self._molecule_type = 'nucl'
-        self._genefinder = 'none'
-        self._hmmdetection_strictness = None
-        self._sideload_simple = None
-        self.status = 'pending'
+        self._state: str = 'created'
+        self._molecule_type: str = 'nucl'
+        self._genefinder: str = 'none'
+        self._hmmdetection_strictness: str | None = None
+        self._sideload_simple: str | None = None
+        self.status: str = 'pending'
+        self.original_id: str | None = None
 
         # Regular attributes that differ from None
-        self.added = datetime.utcnow()
-        self.last_changed = datetime.utcnow()
+        self.added: datetime = datetime.utcnow()
+        self.last_changed: datetime = datetime.utcnow()
 
         # Initialise list type attributes to [] instead of None
         for attr in self.LIST_ARGS:
@@ -176,28 +180,29 @@ class BaseJob(BaseMapper):
 
     # Not really async, but follow the same API as the other properties
     @property
-    def job_id(self):
+    def job_id(self) -> str:
         return self._id
 
     # No setter, job_id is a read-only property
 
     # Not really async, but follow same API as the other properties
     @property
-    def taxon(self):
+    def taxon(self) -> str:
         return self._taxon
 
     # No setter, taxon is a read-only property
 
     @property
-    def state(self):
+    def state(self) -> str:
         if self._legacy:
             state = self.status.split(' ')[0].rstrip(':')
             if state in self.VALID_STATES:
                 return state
+            return "created"
         return self._state
 
     @state.setter
-    def state(self, value):
+    def state(self, value: str | None) -> None:
         if value is None:
             self._legacy = True
             return
@@ -209,21 +214,19 @@ class BaseJob(BaseMapper):
         self.changed()
 
     @property
-    def status(self):
+    def status(self) -> str:
         return self._status
 
     @status.setter
-    def status(self, value):
-        if type(value) == bytes:
-            value = value.decode('utf-8', 'ignore')
+    def status(self, value: str) -> None:
         self._status = value
 
     @property
-    def molecule_type(self):
+    def molecule_type(self) -> str:
         return self._molecule_type
 
     @molecule_type.setter
-    def molecule_type(self, value):
+    def molecule_type(self, value: str) -> None:
         if value is None:
             value = 'nucl'
 
@@ -236,11 +239,11 @@ class BaseJob(BaseMapper):
         self._molecule_type = value
 
     @property
-    def genefinder(self):
+    def genefinder(self) -> str:
         return self._genefinder
 
     @genefinder.setter
-    def genefinder(self, value):
+    def genefinder(self, value: str) -> None:
         if value not in {'prodigal', 'prodigal-m', 'glimmerhmm', 'error', 'none'}:
             if self._legacy and value in {'glimmer', 'prodigal_m'}:
                 if value == 'prodigal_m':
@@ -251,30 +254,30 @@ class BaseJob(BaseMapper):
 
     # We want to migrate from "genefinder" to "genefinding" eventually
     @property
-    def genefinding(self):
+    def genefinding(self) -> str:
         return self._genefinder
 
     @genefinding.setter
-    def genefinding(self, value):
+    def genefinding(self, value) -> None:
         self.genefinder = value
 
     @property
-    def hmmdetection_strictness(self):
+    def hmmdetection_strictness(self) -> str | None:
         return self._hmmdetection_strictness
 
     @hmmdetection_strictness.setter
-    def hmmdetection_strictness(self, value):
+    def hmmdetection_strictness(self, value: str) -> None:
         if value not in BaseJob.STRICTNESS_LEVELS:
             raise ValueError('Invalid strictnes level {}'.format(value))
 
         self._hmmdetection_strictness = value
 
     @property
-    def sideload_simple(self):
+    def sideload_simple(self) -> str | None:
         return self._sideload_simple
 
     @sideload_simple.setter
-    def sideload_simple(self, value):
+    def sideload_simple(self, value: str) -> None:
         # validate format is correct: ACCESSION:START-END
         parts = value.split(":")
         if len(parts) != 2:
@@ -309,12 +312,12 @@ class BaseJob(BaseMapper):
 
         return True
 
-    def changed(self):
+    def changed(self) -> None:
         """Update the job's last changed timestamp"""
         self.last_changed = datetime.utcnow()
 
-    def to_dict(self, extra_info=False):
-        ret = super(BaseJob, self).to_dict()
+    def to_dict(self, extra_info=False) -> dict[str, Any]:
+        ret: dict[str, Any] = super(BaseJob, self).to_dict()
 
         if extra_info:
             ret['job_id'] = self.job_id
@@ -322,11 +325,11 @@ class BaseJob(BaseMapper):
 
         return ret
 
-    def __str__(self):
+    def __str__(self) -> str:
         return "Job(id: {}, state: {})".format(self._id, self.state)
 
     @classmethod
-    def fromExisting(cls, new_id, existing):
+    def fromExisting(cls: Type[TJob], new_id: str, existing: TJob) -> TJob:
         """"Create a copy from an existing job, with a new ID
 
         :param new_id: New key to use

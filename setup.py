@@ -49,6 +49,7 @@ setup(
     install_requires=install_requires,
     tests_require=tests_require,
     packages=['antismash_models'],
+    package_data={"antismash_models": ["py.typed"]},
     url='https://github.com/antismash/models/',
     license='GNU Affero General Public License v3 or later (AGPLv3+)',
     classifiers=[

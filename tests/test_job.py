@@ -61,7 +61,7 @@ def test_init_legacy(sync_db):
     job.molecule_type = None
     assert job.molecule_type == 'nucl'
 
-    job.status = b'failed: Invalid utf-8 \x21'
+    job.status = 'failed: Invalid utf-8 \x21'
     assert job.state == 'failed'
 
 

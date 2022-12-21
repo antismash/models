@@ -1,34 +1,41 @@
 """Base Redis<->Python object mapper"""
 from datetime import datetime
 import json
+from typing import Any, Type, TypeVar
+
+from redis import Redis as SyncRedis
+from redis.asyncio import Redis as AsyncRedis
+
+DataBase = SyncRedis | AsyncRedis
+TMapper = TypeVar("TMapper", bound="BaseMapper")
 
 
 class BaseMapper:
     """Base object mapper class"""
 
-    ATTRIBUTES = ()
-    PROPERTIES = ()
-    INTERNAL = ('_db', '_key')
+    ATTRIBUTES: tuple[str, ...] = ()
+    PROPERTIES: tuple[str, ...] = ()
+    INTERNAL: tuple[str, ...] = ('_db', '_key')
 
-    __slots__ = ATTRIBUTES + INTERNAL + tuple(['_%s' % p for p in PROPERTIES])
+    __slots__: tuple[str, ...] = ATTRIBUTES + INTERNAL + tuple(['_%s' % p for p in PROPERTIES])
 
-    BOOL_ARGS = {}
-    INT_ARGS = {}
-    FLOAT_ARGS = {}
-    DATE_ARGS = {}
-    LIST_ARGS = {}
+    BOOL_ARGS: set[str] = set()
+    INT_ARGS: set[str] = set()
+    FLOAT_ARGS: set[str] = set()
+    DATE_ARGS: set[str] = set()
+    LIST_ARGS: set[str] = set()
 
-    def __init__(self, db, key):
-        self._db = db
-        self._key = key
+    def __init__(self, db: DataBase, key: str) -> None:
+        self._db: DataBase = db
+        self._key: str = key
 
         for attribute in self.ATTRIBUTES:
             setattr(self, attribute, None)
 
-    def to_dict(self):
-        ret = {}
+    def to_dict(self) -> dict[str, Any]:
+        ret: dict[str, Any] = {}
 
-        args = self.PROPERTIES + self.ATTRIBUTES
+        args: tuple[str, ...] = self.PROPERTIES + self.ATTRIBUTES
 
         for arg in args:
             if getattr(self, arg) is not None:
@@ -46,7 +53,7 @@ class BaseMapper:
 
         return ret
 
-    def _parse(self, args, values):
+    def _parse(self, args, values) -> None:
         for i, arg in enumerate(args):
             val = values[i]
 
@@ -78,7 +85,7 @@ class BaseMapper:
             setattr(self, arg, val)
 
     @classmethod
-    def fromExisting(cls, new_id, existing):
+    def fromExisting(cls: Type[TMapper], new_id: str, existing: TMapper) -> TMapper:
         """"Create a copy from an existing object, with a new ID
 
         :param new_id: New key to use

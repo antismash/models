@@ -1,7 +1,11 @@
 """antiSMASH notice abstraction"""
 from datetime import datetime, timedelta
 from functools import wraps
-from .base import BaseMapper, async_mixin, sync_mixin
+from typing import TypeVar
+
+from .base import BaseMapper, DataBase, async_mixin, sync_mixin
+
+TNotice = TypeVar("TNotice", bound="BaseNotice")
 
 
 class BaseNotice(BaseMapper):
@@ -39,21 +43,21 @@ class BaseNotice(BaseMapper):
         'warning',
     }
 
-    def __init__(self, db, notice_id: str, *, category: str = "info",
+    def __init__(self, db: DataBase, notice_id: str, *, category: str = "info",
                  teaser: str = "placeholder", text: str = "placeholder",
                  show_from: datetime | None = None,
                  show_until: datetime | None = None):
         super(BaseNotice, self).__init__(db, "notice:{}".format(notice_id))
-        self._id = notice_id
+        self._id: str = notice_id
         self.category = category
 
         # by default, show new notices immediately
-        self.show_from = show_from if show_from else datetime.utcnow()
+        self.show_from: datetime = show_from if show_from else datetime.utcnow()
         # by default, show notices for a week
-        self.show_until = show_until if show_until else self.show_from + timedelta(days=7)
+        self.show_until: datetime = show_until if show_until else self.show_from + timedelta(days=7)
 
-        self.teaser = teaser
-        self.text = text
+        self.teaser: str = teaser
+        self.text: str = text
 
     @property
     def notice_id(self) -> str:

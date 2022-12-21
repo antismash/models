@@ -1,6 +1,6 @@
 """antiSMASH worker control abstraction"""
 from functools import wraps
-from .base import BaseMapper, async_mixin, sync_mixin
+from .base import BaseMapper, DataBase, async_mixin, sync_mixin
 
 
 CONTROL_TIMEOUT = 300
@@ -37,15 +37,15 @@ class BaseControl(BaseMapper):
         'running_jobs',
     }
 
-    def __init__(self, db, name, max_jobs, version="unknown"):
+    def __init__(self, db: DataBase, name: str, max_jobs: int, version: str = "unknown") -> None:
         super(BaseControl, self).__init__(db, "control:{}".format(name))
         self.name = name
-        self.stop_scheduled = False
-        self.running = True
-        self.status = 'running'
-        self.max_jobs = max_jobs
-        self.running_jobs = 0
-        self.version = version
+        self.stop_scheduled: bool = False
+        self.running: bool = True
+        self.status: str = 'running'
+        self.max_jobs: int = max_jobs
+        self.running_jobs: int = 0
+        self.version: str = version
 
 
 def expiring_async_mixin(klass):
