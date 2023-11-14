@@ -44,6 +44,18 @@ def test_init(sync_db):
     with pytest.raises(ValueError):
         job.hmmdetection_strictness = 'bob'
 
+    with pytest.deprecated_call():
+        assert job.sideload is None
+
+    with pytest.deprecated_call():
+        job.sideload = 'bob'
+
+    with pytest.deprecated_call():
+        assert job.sideload == 'bob'
+        job.sideload = 'alice'
+        assert job.sideload == 'alice'
+    assert job.sideloads == ['alice']
+
 
 def test_init_legacy(sync_db):
     fake_id = 'a7db5650-ec0d-4ca8-b3b2-c5de27a8cdf3'
