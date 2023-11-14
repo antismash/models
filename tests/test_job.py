@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, UTC
 import pytest
 from antismash_models.job import BaseJob, AsyncJob, SyncJob
 
@@ -121,7 +121,7 @@ def test_to_dict(sync_db):
     fake_id = 'taxon-fake'
     job = BaseJob(sync_db, fake_id)
     job.tta = True
-    now = datetime.utcnow()
+    now = datetime.now(UTC)
     job.added = now
     job.last_changed = now
     job.needs_download = True
@@ -159,7 +159,7 @@ async def test_async_commit(async_db):
     fake_id = 'taxon-fake'
     job = AsyncJob(async_db, fake_id)
     job.tta = True
-    now = datetime.utcnow()
+    now = datetime.now(UTC)
     job.added = now
     await job.commit()
 
@@ -170,7 +170,7 @@ def test_sync_commit(sync_db):
     fake_id = 'taxon-fake'
     job = SyncJob(sync_db, fake_id)
     job.tta = True
-    now = datetime.utcnow()
+    now = datetime.now(UTC)
     job.added = now
     job.commit()
 
@@ -179,7 +179,7 @@ def test_sync_commit(sync_db):
 
 @pytest.mark.asyncio
 async def test_async_fetch(async_db):
-    now = datetime.utcnow()
+    now = datetime.now(UTC)
     job_dict = {
         'added': now.strftime("%Y-%m-%d %H:%M:%S.%f"),
         'cf_threshold': 0.5,
@@ -210,7 +210,7 @@ async def test_async_fetch_invalid(async_db):
 
 
 def test_sync_fetch(sync_db):
-    now = datetime.utcnow()
+    now = datetime.now(UTC)
     job_dict = {
         'added': now.strftime("%Y-%m-%d %H:%M:%S.%f"),
         'cf_threshold': 0.5,

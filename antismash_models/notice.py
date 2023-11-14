@@ -1,6 +1,6 @@
 """antiSMASH notice abstraction"""
 from __future__ import annotations
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, UTC
 from functools import wraps
 from typing import TypeVar, Union
 
@@ -53,7 +53,7 @@ class BaseNotice(BaseMapper):
         self.category = category
 
         # by default, show new notices immediately
-        self.show_from: datetime = show_from if show_from else datetime.utcnow()
+        self.show_from: datetime = show_from if show_from else datetime.now(UTC)
         # by default, show notices for a week
         self.show_until: datetime = show_until if show_until else self.show_from + timedelta(days=7)
 
@@ -83,7 +83,7 @@ def expiring_async_mixin(klass):
             ret = await fn(self)
             # aio-redis expireat can't deal with datetime objects, but converting datetimes to timestamps sucks,
             # so use expire on the difference instead
-            td = self.show_until - datetime.utcnow()
+            td = self.show_until - datetime.now(UTC)
             await self._db.expire(self._key, int(td.total_seconds()))
             return ret
         return wrapper
@@ -101,7 +101,7 @@ def expiring_sync_mixin(klass):
         def wrapper(self):
             ret = fn(self)
             # regular redis doesn't deal with datetime objects anymore either, so also use expire on the difference
-            td = self.show_until - datetime.utcnow()
+            td = self.show_until - datetime.now(UTC)
             self._db.expire(self._key, int(td.total_seconds()))
             return ret
         return wrapper
