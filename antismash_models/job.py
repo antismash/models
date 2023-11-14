@@ -2,7 +2,8 @@
 from __future__ import annotations
 from datetime import datetime, UTC
 import string
-from typing import Any, Type, TypeVar, Union
+from typing import Any, Optional, Type, TypeVar, Union
+from warnings import warn
 
 from .base import BaseMapper, DataBase, async_mixin, sync_mixin
 
@@ -63,7 +64,7 @@ class BaseJob(BaseMapper):
         'rre_minlength',
         'rre_cutoff',
         'seed',
-        'sideload',
+        'sideloads',
         'smcogs',
         'smcog_trees',
         'subclusterblast',
@@ -124,6 +125,7 @@ class BaseJob(BaseMapper):
     }
 
     LIST_ARGS = {
+        'sideloads',
         'target_queues',
         'trace',
     }
@@ -167,6 +169,7 @@ class BaseJob(BaseMapper):
         self._molecule_type: str = 'nucl'
         self._genefinder: str = 'none'
         self._hmmdetection_strictness: Union[str, None] = None
+        self.sideloads: list[str] = []
         self._sideload_simple: Union[str, None] = None
         self.status: str = 'pending'
         self.original_id: Union[str, None] = None
@@ -272,6 +275,21 @@ class BaseJob(BaseMapper):
             raise ValueError('Invalid strictnes level {}'.format(value))
 
         self._hmmdetection_strictness = value
+
+    @property
+    def sideload(self) -> Optional[str]:
+        warn("Job.sideload deprecated, please use Job.sideloads list instead", DeprecationWarning)
+        if self.sideloads:
+            return self.sideloads[0]
+        return None
+
+    @sideload.setter
+    def sideload(self, value: str) -> None:
+        warn("Job.sideload deprecated, please use Job.sideloads list instead", DeprecationWarning)
+        if self.sideloads:
+            self.sideloads[0] = value
+        else:
+            self.sideloads.append(value)
 
     @property
     def sideload_simple(self) -> Union[str, None]:

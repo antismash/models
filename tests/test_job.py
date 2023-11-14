@@ -142,6 +142,7 @@ def test_to_dict(sync_db):
         'target_queues': '[]',
         'trace': '["foo"]',
         'hmmdetection_strictness': 'strict',
+        'sideloads': '[]',
     }
     ret = job.to_dict(True)
     assert ret == expected
