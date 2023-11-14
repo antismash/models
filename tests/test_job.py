@@ -205,6 +205,7 @@ async def test_async_fetch(async_db):
 
 @pytest.mark.asyncio
 async def test_async_fetch_invalid(async_db):
+    await async_db.delete('job:taxon-fake')
     job = AsyncJob(async_db, 'taxon-fake')
     with pytest.raises(ValueError):
         await job.fetch()
