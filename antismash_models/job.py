@@ -1,11 +1,12 @@
 """antiSMASH job abstraction"""
 from __future__ import annotations
-from datetime import datetime, UTC
+from datetime import datetime
 import string
 from typing import Any, Optional, Type, TypeVar, Union
 from warnings import warn
 
 from .base import BaseMapper, DataBase, async_mixin, sync_mixin
+from .utils import now
 
 TJob = TypeVar("TJob", bound="BaseJob")
 
@@ -175,8 +176,8 @@ class BaseJob(BaseMapper):
         self.original_id: Union[str, None] = None
 
         # Regular attributes that differ from None
-        self.added: datetime = datetime.now(UTC)
-        self.last_changed: datetime = datetime.now(UTC)
+        self.added: datetime = now()
+        self.last_changed: datetime = now()
 
         # Initialise list type attributes to [] instead of None
         for attr in self.LIST_ARGS:
@@ -333,7 +334,7 @@ class BaseJob(BaseMapper):
 
     def changed(self) -> None:
         """Update the job's last changed timestamp"""
-        self.last_changed = datetime.now(UTC)
+        self.last_changed = now()
 
     def to_dict(self, extra_info=False) -> dict[str, Any]:
         ret: dict[str, Any] = super(BaseJob, self).to_dict()
