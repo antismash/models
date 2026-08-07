@@ -1,0 +1,52 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "antismash-models"
+dynamic = ["version"]
+description = "An object model for mapping antiSMASH data objects from and to Redis via sync or async connections."
+readme = { file = "README.md", content-type = "text/markdown" }
+requires-python = ">=3.11"
+authors = [
+    { name = "Kai Blin", email = "kblin@biosustain.dtu.dk" },
+]
+license = "AGPL-3.0-or-later"
+license-files = ["LICENSE.txt"]
+classifiers = [
+    "Programming Language :: Python",
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Science/Research",
+    "Topic :: Scientific/Engineering :: Bio-Informatics",
+    "Operating System :: OS Independent",
+]
+dependencies = [
+    "redis",
+]
+
+[project.optional-dependencies]
+testing = [
+    "pytest",
+    "coverage",
+    "pytest-cov",
+    "fakeredis",
+    "pytest-asyncio",
+    "flake8",
+    "mypy",
+    "types-redis",
+]
+building = [
+    "build",
+]
+
+[project.urls]
+Homepage = "https://github.com/antismash/models/"
+
+[tool.setuptools]
+packages = ["antismash_models"]
+
+[tool.setuptools.dynamic]
+version = { attr = "antismash_models.__version__" }
+
+[tool.setuptools.package-data]
+antismash_models = ["py.typed"]
