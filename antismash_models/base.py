@@ -1,6 +1,6 @@
 """Base Redis<->Python object mapper"""
 from __future__ import annotations
-from datetime import datetime
+from datetime import datetime, UTC
 import json
 from typing import Any, Type, TypeVar, Union
 
@@ -46,6 +46,12 @@ class BaseMapper:
                 if arg in self.BOOL_ARGS:
                     arg_val = str(arg_val)
                 elif arg in self.DATE_ARGS:
+
+                    if arg_val.tzinfo is None:
+                        arg_val = arg_val.replace(tzinfo=UTC)
+                    else:
+                        arg_val = arg_val.astimezone(UTC)
+
                     arg_val = arg_val.strftime("%Y-%m-%d %H:%M:%S.%f")
                 elif arg in self.LIST_ARGS:
                     arg_val = json.dumps(arg_val)
@@ -80,6 +86,8 @@ class BaseMapper:
                     val = datetime.strptime(val, "%Y-%m-%d %H:%M:%S.%f")
                 except ValueError:
                     val = datetime.strptime(val, "%Y-%m-%d %H:%M:%S")
+
+                val = val.replace(tzinfo=UTC)
             elif arg in self.LIST_ARGS:
                 val = json.loads(val)
 

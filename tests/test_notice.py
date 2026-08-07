@@ -1,4 +1,6 @@
 """Tests for the Notice objects"""
+from datetime import datetime, UTC
+
 import pytest
 
 from antismash_models.notice import AsyncNotice, SyncNotice
@@ -34,6 +36,24 @@ def test_low_res_date(sync_db):
     sync_db.hset(notice._key, 'show_from', date_str[:date_str.find('.')])
 
     notice.fetch()
+
+
+def test_tzinfo(sync_db):
+    notice = SyncNotice(sync_db, "fake")
+    notice.commit()
+
+    assert notice.show_from.tzinfo is UTC
+    assert notice.show_from.utcoffset().total_seconds() == 0
+
+
+def test_to_dict_with_naive_datetime(sync_db):
+    notice = SyncNotice(sync_db, "fake")
+    naive = datetime(2025, 1, 2, 3, 4, 5, 123456)
+    assert naive.tzinfo is None
+
+    notice.show_from = naive
+    result = notice.to_dict()
+    assert result["show_from"] == "2025-01-02 03:04:05.123456"
 
 
 @pytest.mark.asyncio
